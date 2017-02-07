@@ -1,6 +1,6 @@
 {
   "name": "moocher",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Web content scraper",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
+    "gulp-mocha": "^3.0.1",
     "mocha": "^3.2.0"
   },
   "dependencies": {

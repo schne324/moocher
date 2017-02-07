@@ -3,20 +3,6 @@
 const assert = require('chai').assert;
 const Moocher = require('..');
 
-/**
-
-var mooch = new Moocher(['http://google.com'], {
-  limit: 10
-});
-
-mooch
-  // attach some events
-  .on('mooch', ...)
-  .on('complete', ...)
-  // kick off the moocher
-  .start()
- */
-
 describe('Moocher', () => {
   it('should throw if no urls are provided', () => {
     try {
@@ -62,7 +48,7 @@ describe('Moocher', () => {
         .start();
     });
 
-    it('should pass the cheerio-loaded document object as the 1st param of mooch event callback', (done) => {
+    it('should pass the cheerio-loaded document object as the 1st argument of a mooch event callback', (done) => {
       const mooch = new Moocher('https://google.com');
 
       mooch
@@ -73,7 +59,7 @@ describe('Moocher', () => {
         .start();
     });
 
-    it('should pass the original url as the 2nd param of mooch event callback', (done) => {
+    it('should pass the original url as the 2nd argument of a mooch event callback', (done) => {
       const mooch = new Moocher('https://google.com');
 
       mooch.on('mooch', (_, url) => {
