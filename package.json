@@ -9,7 +9,9 @@
   "author": "Harris Schneiderman",
   "license": "MIT",
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "mocha": "^3.2.0"
   },
   "dependencies": {
     "async": "^2.1.4",
