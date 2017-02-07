@@ -6,6 +6,13 @@ const Emitter = require('component-emitter');
 const $ = require('cheerio');
 
 module.exports = class {
+  /**
+   * Moocher
+   * @param {String|Array} urls     a single string url or an array of urls
+   * @param {Object}       options  the configuration object containg the following options:
+   *
+   * - @option {Number}    limit    the maximum number of concurrent requests
+   */
   constructor(urls, options) {
     this.options = options || {};
 
