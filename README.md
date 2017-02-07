@@ -1,0 +1,2 @@
+# Moocher
+Web content scraper
