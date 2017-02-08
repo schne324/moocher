@@ -32,7 +32,8 @@ module.exports = class {
     const q = async.queue((url, callback) => {
       request(url, (err, response, body) => {
         if (err || response.statusCode !== 200) {
-          throw new Error(err || `Error ${url} (${response.statusCode})`);
+          this.emit('error', err || `Error ${url} (${response.statusCode})`);
+          return callback();
         }
 
         this.emit('mooch', $.load(body), url);

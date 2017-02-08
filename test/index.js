@@ -24,7 +24,7 @@ describe('Moocher', () => {
   });
 
   describe('events', () => {
-    it('should fire a mooch event when a single reponse occurs', (done) => {
+    it('should emit a mooch event when a single reponse occurs', (done) => {
       const mooch = new Moocher('https://google.com');
       let called = false;
       mooch
@@ -38,11 +38,23 @@ describe('Moocher', () => {
         .start();
     });
 
-    it('should fire the complete event when everything is done', (done) => {
+    it('should emit the complete event when everything is done', (done) => {
       const mooch = new Moocher('https://google.com');
       mooch
         .on('complete', () => {
           assert(true);
+          done();
+        })
+        .start();
+    });
+
+    it('should emit the "error" event if the request fails', (done) => {
+      const url = 'http://google.com/aldsfjalsdkfjals/kdfjalszxzxask/d/jflaskdjflavvedksjdflkj';
+      const mooch = new Moocher(url);
+
+      mooch
+        .on('error', (err) => {
+          assert.equal(err, `Error ${url} (404)`);
           done();
         })
         .start();
