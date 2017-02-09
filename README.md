@@ -1,6 +1,7 @@
 
 # Moocher
-![Build Status](https://api.travis-ci.org/schne324/moocher.svg?branch=master)
+[![Build Status](https://api.travis-ci.org/schne324/moocher.svg?branch=master)](https://travis-ci.org/schne324/moocher)
+[![Coverage Status](https://coveralls.io/repos/github/schne324/moocher/badge.svg?branch=master)](https://coveralls.io/github/schne324/moocher?branch=master)
 
 Web content scraper
 
