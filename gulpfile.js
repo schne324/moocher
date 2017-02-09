@@ -5,8 +5,6 @@ const mocha = require('gulp-mocha');
 const istanbul = require('gulp-istanbul');
 const coveralls = require('gulp-coveralls');
 
-process.env['COVERALLS_REPO_TOKEN'] = 'QVGNfyhtN1G9JRG5f7jm7nFCkg61w4L9K';
-
 gulp.task('default', ['test-coverage', 'coveralls']);
 
 gulp.task('test', () => {
