@@ -2,12 +2,30 @@
 
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
+const istanbul = require('gulp-istanbul');
 const coveralls = require('gulp-coveralls');
 
-gulp.task('default', ['test']);
+gulp.task('default', ['test-coverage', 'coveralls']);
 
 gulp.task('test', () => {
-  gulp.src('test/index.js', {read: false}).pipe(mocha());
+  return gulp.src('test/index.js', {read: false})
+    .pipe(mocha());
 });
 
-gulp.task('coveralls', () => gulp.src('./coverage/lcov.info').pipe(coveralls()));
+gulp.task('test-coverage', ['pre-coverage'], () => {
+  return gulp.src('test/index.js', {read: false})
+    .pipe(mocha())
+    .pipe(istanbul.writeReports())
+    .pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }));
+});
+
+gulp.task('pre-coverage', () => {
+  return gulp.src('index.js')
+    .pipe(istanbul())
+    .pipe(istanbul.hookRequire());
+});
+
+gulp.task('coveralls', () => {
+  return gulp.src('/coverage/lcov.info')
+    .pipe(coveralls());
+});

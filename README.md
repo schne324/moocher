@@ -1,4 +1,7 @@
+
 # Moocher
+![Build Status](https://api.travis-ci.org/schne324/moocher.svg?branch=master)
+
 Web content scraper
 
 ## Installation
