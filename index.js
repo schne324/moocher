@@ -41,9 +41,7 @@ module.exports = class {
       });
     }, this.options.limit || 2);
 
-    q.drain = () => {
-      this.emit('complete');
-    };
+    q.drain = () => this.emit('complete');
 
     q.push(this.urls);
     return this;
