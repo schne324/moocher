@@ -7,7 +7,7 @@
 ## Installation
 
 ```bash
-$ npm install --save-dev moocher # or yarn add moocher
+$ npm install --save moocher # or yarn add moocher
 ```
 
 ## Usage
