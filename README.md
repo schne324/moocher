@@ -1,14 +1,11 @@
-
 # Moocher
-[![Build Status](https://api.travis-ci.org/schne324/moocher.svg?branch=master)](https://travis-ci.org/schne324/moocher)
-[![Coverage Status](https://coveralls.io/repos/github/schne324/moocher/badge.svg?branch=master)](https://coveralls.io/github/schne324/moocher?branch=master)
 
 Web content scraper
 
 ## Installation
 
 ```bash
-$ npm install moocher
+$ npm install --save-dev moocher # or yarn add moocher
 ```
 
 ## Usage
@@ -18,18 +15,18 @@ new Moocher(urls, options);
 ```
 
 - `urls` {String|Array} a single string url or an array of urls to scrape content from.
-- `options` {Object} the configuration object.
-  - `limit` {Number} the number of concurrent requests to make while scraping.
+- `options` {Object} (optional) the configuration object.
+  - `limit` {Number} (optional) the number of concurrent requests to make while scraping. Defaults to `undefined` which does not enforce a concurrency limit (all requests will be run in parallel).
 
 ## API
 Moocher emits the following events:
 
 - `"mooch"`: Emits for each response. The callback receives the following arguments:
-  - `$`: The cheerio-loaded document. This means you can just use jQuery methods on the response document. NOTE: if the raw HTML is desired use `$.html`.
+  - `$`: The cheerio-loaded document. This means you can just use jQuery methods on the response document.
   - `url`: The original url passed to Moocher.
-- `"error"`: Emits when a single request fails (404, 500, etc..)
+  - `response`: The full response object
+- `"error"`: Emits when a single request fails
 - `"complete"`: Emits when the moocher is done mooching.
-
 
 
 ## Example
@@ -41,22 +38,20 @@ const mooch = new Moocher([
   'https://url-4.com',
   'http://url-5.com'
 ], {
-  limit: 10 // allow only 10 concurrent requests
+  limit: 2 // allow only 2 concurrent requests
 });
 
 mooch
   // emitted for each web page mooched
   .on('mooch', ($, url) => {
-    const $foo = $('.foo');
-    if (url === 'http://url-2.com') {
-      // do some stuff
-    }
+    const $h1 = $('h1');
+    titles.push($h1.text());
   })
   // emitted if any request fails
   .on('error', (err) => console.error(err))
   // emitted when all urls have been mooched
   .on('complete', () => {
-    console.log('all of the content has been mooched');
+    console.log(`All titles have been mooched: ${titles.join(', ')}`);
   })
   // start mooching!
   .start();

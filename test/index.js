@@ -1,85 +1,76 @@
 'use strict';
 
-const assert = require('chai').assert;
+const test = require('ava');
 const Moocher = require('..');
+const http = require('http');
+const URL = 'http://localhost:3003';
+let shouldFail = false;
+// create a tiny server that so we can make local requests for these unit tests
+const server = http.createServer((req, res) => {
+  if (shouldFail) {
+    res.writeHead(500, { 'Content-Type': 'application/json' })
+    res.end();
+  } else {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end(`
+      <!DOCTYPE html>
+      <html>
+      <head></head>
+      <body><h1>BOOGNISH</h1></body>
+      </html>
+    `);
+  }
 
-describe('Moocher', () => {
-  it('should throw if no urls are provided', () => {
-    try {
-      new Moocher()
-    } catch (e) {
-      assert.isDefined(e);
-    }
-  });
+});
+server.listen(3003);
 
-  it('should accept a single string url', () => {
-    const mooch = new Moocher('https://google.com');
-    assert.deepEqual(mooch.urls, ['https://google.com']);
-  });
+test.beforeEach(() => shouldFail = false);
+// once we're done, kill the test server
+test.after.always.cb(t => {
+  server.close(() => t.end());
+});
 
-  it('should accept an array of urls', () => {
-    const urls = ['http://a.biz', 'http://b.biz']
-    const mooch = new Moocher(urls);
-    assert.deepEqual(mooch.urls, urls);
-  });
+test('throws given invalid arguments', t => {
+  t.throws(() => new Moocher());
+});
 
-  describe('events', () => {
-    it('should emit a mooch event when a single reponse occurs', (done) => {
-      const mooch = new Moocher('https://google.com');
-      let called = false;
-      mooch
-        .on('mooch', () => {
-          called = true;
-        })
-        .on('complete', () => {
-          assert.isTrue(called);
-          done();
-        })
-        .start();
-    });
+test.cb('handles a single url', t => {
+  t.plan(1);
+  let callCount = 0;
+  const mooch = new Moocher(URL);
 
-    it('should emit the complete event when everything is done', (done) => {
-      const mooch = new Moocher('https://google.com');
-      mooch
-        .on('complete', () => {
-          assert(true);
-          done();
-        })
-        .start();
-    });
+  mooch
+    .on('mooch', () => callCount++)
+    .on('complete', () => {
+      t.is(callCount, 1);
+      t.end();
+    })
+    .start();
+});
 
-    it('should emit the "error" event if the request fails', (done) => {
-      const url = 'http://google.com/aldsfjalsdkfjals/kdfjalszxzxask/d/jflaskdjflavvedksjdflkj';
-      const mooch = new Moocher(url);
+test.cb('handles an array of urls', t => {
+  t.plan(1);
+  let callCount = 0;
+  const mooch = new Moocher(new Array(5).fill(URL));
 
-      mooch
-        .on('error', (err) => {
-          assert.equal(err, `Error ${url} (404)`);
-          done();
-        })
-        .start();
-    });
+  mooch
+    .on('mooch', () => callCount++)
+    .on('complete', () => {
+      t.is(callCount, 5);
+      t.end();
+    })
+    .start();
+});
 
-    it('should pass the cheerio-loaded document object as the 1st argument of a mooch event callback', (done) => {
-      const mooch = new Moocher('https://google.com');
+test.cb.serial('emits an "error" event given a failed request', t => {
+  t.plan(1);
+  shouldFail = true;
+  const mooch = new Moocher(URL);
 
-      mooch
-        .on('mooch', ($) => {
-          assert.isDefined($.html);
-          done();
-        })
-        .start();
-    });
-
-    it('should pass the original url as the 2nd argument of a mooch event callback', (done) => {
-      const mooch = new Moocher('https://google.com');
-
-      mooch.on('mooch', (_, url) => {
-        assert.equal(url, 'https://google.com');
-        done();
-      });
-
-      mooch.start();
-    });
-  });
+  mooch
+    .on('error', () => {
+      t.pass();
+      t.end();
+    })
+    .start();
 });
