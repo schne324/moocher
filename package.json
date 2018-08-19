@@ -4,7 +4,7 @@
   "description": "Web content scraper",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test",
+    "test": "nyc ava --serial",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "repository": {
@@ -14,19 +14,28 @@
   "author": "Harris Schneiderman",
   "license": "MIT",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "coveralls": "^2.11.16",
-    "gulp": "^3.9.1",
-    "gulp-coveralls": "^0.1.4",
-    "gulp-istanbul": "^1.1.1",
-    "gulp-mocha": "^3.0.1",
-    "mocha": "^3.2.0",
-    "mocha-lcov-reporter": "^1.2.0"
+    "ava": "^0.25.0",
+    "nyc": "^12.0.2"
   },
   "dependencies": {
-    "async": "^2.1.4",
-    "cheerio": "^0.22.0",
-    "component-emitter": "^1.2.1",
-    "request": "^2.79.0"
+    "cheerio": "^1.0.0-rc.2",
+    "got": "^9.0.0",
+    "promise-limit": "^2.7.0"
+  },
+  "nyc": {
+    "checkCoverage": true,
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100,
+    "exclude": [
+      "dist",
+      "coverage",
+      "test/**/*.js"
+    ]
   }
 }

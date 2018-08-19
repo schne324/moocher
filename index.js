@@ -1,49 +1,36 @@
 'use strict';
 
-const request = require('request');
-const async = require('async');
-const Emitter = require('component-emitter');
-const $ = require('cheerio');
+const assert = require('assert');
+const EventEmitter = require('events');
+const got = require('got');
+const cheerio = require('cheerio');
+const promiseLimit = require('promise-limit')
+const validUrls = urls => urls && (typeof urls === 'string' || Array.isArray(urls));
 
-module.exports = class {
-  /**
-   * Moocher
-   * @param {String|Array} urls     a single string url or an array of urls
-   * @param {Object}       options  the configuration object containg the following options:
-   *
-   * - @option {Number}    limit    the maximum number of concurrent requests
-   */
-  constructor(urls, options) {
-    this.options = options || {};
-
-    if ('string' === typeof urls) { urls = [urls] }
-
-    if (!urls || !urls.length) {
-      throw new Error('At least 1 url must be provided in the options.urls array');
-    }
-
-    this.urls = urls;
-
-    // expose event emitter
-    Emitter(this);
+module.exports = class Moocher extends EventEmitter {
+  constructor(urls, options = {}) {
+    super();
+    // validate urls, the only required argument
+    assert(validUrls(urls), 'Invalid url argument');
+    this.urls = Array.isArray(urls) ? urls : [urls];
+    this.options = options;
   }
 
   start() {
-    const q = async.queue((url, callback) => {
-      request(url, (err, response, body) => {
-        if (err || response.statusCode !== 200) {
-          this.emit('error', err || `Error ${url} (${response.statusCode})`);
-          return callback();
-        }
+    const limit = promiseLimit(this.options.limit);
+    const requests = this.urls.map(url => limit(() => this.request(url)))
+    Promise.all(requests).then(() => this.emit('complete'));
 
-        this.emit('mooch', $.load(body), url);
-        callback();
-      });
-    }, this.options.limit || 2);
-
-    q.drain = () => this.emit('complete');
-
-    q.push(this.urls);
     return this;
   }
-}
+
+  async request(url) {
+    try {
+      const res = await got(url);
+      const $ = cheerio.load(res.body);
+      this.emit('mooch', $, url, res);
+    } catch (err) {
+      this.emit('error', err);
+    }
+  }
+};
