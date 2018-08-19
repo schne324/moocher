@@ -1,6 +1,8 @@
 # Moocher
 
-Web content scraper
+> Web content scraper
+
+[![CircleCI](https://circleci.com/gh/schne324/moocher.svg?style=svg)](https://circleci.com/gh/schne324/moocher)
 
 ## Installation
 
