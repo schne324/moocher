@@ -1,6 +1,6 @@
 {
   "name": "moocher",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Web content scraper",
   "main": "index.js",
   "scripts": {
